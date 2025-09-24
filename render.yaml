@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: givta-backend
+    env: node
+    region: singapore
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    rootDir: Backend
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: FIREBASE_PROJECT_ID
+        value: givta-94cb8
+      - key: JWT_SECRET
+        value: givta-production-jwt-secret-2024
+      - key: ALLOWED_ORIGINS
+        value: https://givta.app,https://givta-admin.netlify.app,exp://exp.host
+    healthCheckPath: /api/health
+    autoDeploy: true

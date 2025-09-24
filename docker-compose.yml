@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  givta-backend:
+    build: .
+    container_name: givta-backend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      # Add your environment variables here
+      # - FIREBASE_PROJECT_ID=your-project-id
+      # - FIREBASE_PRIVATE_KEY_ID=your-key-id
+      # - FIREBASE_PRIVATE_KEY=your-private-key
+      # - FIREBASE_CLIENT_EMAIL=your-client-email
+      # - FIREBASE_CLIENT_ID=your-client-id
+      # - FIREBASE_AUTH_URI=https://accounts.google.com/o/oauth2/auth
+      # - FIREBASE_TOKEN_URI=https://oauth2.googleapis.com/token
+      # - FIREBASE_AUTH_PROVIDER_X509_CERT_URL=https://www.googleapis.com/oauth2/v1/certs
+      # - FIREBASE_CLIENT_X509_CERT_URL=your-cert-url
+      # - JWT_SECRET=your-jwt-secret
+      # - JWT_REFRESH_SECRET=your-refresh-secret
+      # - PAYSTACK_SECRET_KEY=your-paystack-key
+      # - PAYSTACK_PUBLIC_KEY=your-paystack-public-key
+      # - ENABLE_WHATSAPP_BOT=true
+    volumes:
+      - ./auth_info_baileys:/app/auth_info_baileys
+      - ./logs:/app/logs
+    networks:
+      - givta-network
+    depends_on:
+      - redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  redis:
+    image: redis:7-alpine
+    container_name: givta-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - givta-network
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Optional: Add a monitoring service
+  # monitoring:
+  #   image: prom/prometheus:latest
+  #   container_name: givta-monitoring
+  #   restart: unless-stopped
+  #   ports:
+  #     - "9090:9090"
+  #   volumes:
+  #     - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+  #   networks:
+  #     - givta-network
+
+volumes:
+  redis_data:
+    driver: local
+
+networks:
+  givta-network:
+    driver: bridge
