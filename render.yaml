@@ -2,6 +2,7 @@ services:
   - type: web
     name: givta-backend
     env: node
+    runtime: node20
     # This region will be applied on your next deploy. Ensure your Redis instance is also in this region.
     region: Oregon (US West)
     plan: free

@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "Backend system for Givta - Fintech Social Tipping Platform",
   "main": "dist/index.js",
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=8.0.0"
+  },
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
