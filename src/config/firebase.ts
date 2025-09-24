@@ -29,9 +29,19 @@ try {
   admin.app();
 } catch (error) {
   // App doesn't exist, initialize it
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-  });
+  try {
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+    });
+    console.log('Firebase Admin initialized successfully.');
+  } catch (initError) {
+    console.error('Failed to initialize Firebase Admin:', initError);
+    // In production, we might want to exit or handle differently
+    if (process.env.NODE_ENV === 'production') {
+      console.error('Exiting due to Firebase initialization failure in production.');
+      process.exit(1);
+    }
+  }
 }
 
 export const db = admin.firestore();
