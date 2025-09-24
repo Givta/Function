@@ -498,7 +498,7 @@ router.post('/link/:tipLinkId/send', async (req, res) => {
 
     // Create tip record
     const tipId = `TIP_LINK_${Date.now()}_${tipLinkId.slice(-6)}`;
-    const tipData = {
+    const tipData: any = {
       id: tipId,
       senderId: null, // Anonymous/external tipper
       recipientId: tipLinkData.creatorId,
