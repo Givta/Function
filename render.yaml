@@ -1,5 +1,13 @@
 services:
   - type: web
+    # Note: You will also need to create a Redis service in your Render dashboard.
+    # Once created, link it to this web service. Render will automatically
+    # inject the REDIS_URL environment variable.
+    #
+    # You will also need to create a Secret File for your Firebase credentials
+    # and Secret Environment Variables for the other secrets in the Render UI.
+    # Go to your service's "Environment" tab on Render to add them.
+
     name: givta-backend
     env: node
     region: singapore
@@ -14,9 +22,24 @@ services:
         value: 10000
       - key: FIREBASE_PROJECT_ID
         value: givta-94cb8
-      - key: JWT_SECRET
-        value: givta-production-jwt-secret-2024
       - key: ALLOWED_ORIGINS
         value: https://givta.app,https://givta-admin.netlify.app,exp://exp.host
+      - key: ENABLE_WHATSAPP_BOT
+        value: "true" # or "false"
+      # --- Reference secrets stored securely in Render's dashboard ---
+      - key: JWT_SECRET
+        fromSecret: JWT_SECRET # Name of the secret variable in Render
+      - key: JWT_REFRESH_SECRET
+        fromSecret: JWT_REFRESH_SECRET # Name of the secret variable in Render
+      - key: PAYSTACK_SECRET_KEY
+        fromSecret: PAYSTACK_SECRET_KEY # Name of the secret variable in Render
+      - key: PAYSTACK_PUBLIC_KEY
+        fromSecret: PAYSTACK_PUBLIC_KEY # Name of the secret variable in Render
+      - key: GOOGLE_APPLICATION_CREDENTIALS
+        fromSecretFile: /etc/secrets/firebase_credentials # Path to the secret file on Render
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: givta-redis # Ensure this matches the name of your Render Redis service
     healthCheckPath: /api/health
     autoDeploy: true
