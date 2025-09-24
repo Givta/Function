@@ -2,7 +2,6 @@ services:
   - type: web
     name: givta-backend
     env: node
-    runtime: node20
     # This region will be applied on your next deploy. Ensure your Redis instance is also in this region.
     region: Oregon (US West)
     plan: free
@@ -39,15 +38,29 @@ services:
       - key: PAYSTACK_PUBLIC_KEY
         fromSecret: PAYSTACK_PUBLIC_KEY # Name of the secret variable in Render
 
-      # This references a secret file you create in the Render dashboard for your Firebase credentials.
-      - key: GOOGLE_APPLICATION_CREDENTIALS
-        fromSecretFile: /etc/secrets/firebase_credentials # Path to the secret file on Render
+      # Firebase environment variables (set these as secrets in Render)
+      - key: FIREBASE_PRIVATE_KEY_ID
+        fromSecret: FIREBASE_PRIVATE_KEY_ID
+      - key: FIREBASE_PRIVATE_KEY
+        fromSecret: FIREBASE_PRIVATE_KEY
+      - key: FIREBASE_CLIENT_EMAIL
+        fromSecret: FIREBASE_CLIENT_EMAIL
+      - key: FIREBASE_CLIENT_ID
+        fromSecret: FIREBASE_CLIENT_ID
+      - key: FIREBASE_AUTH_URI
+        fromSecret: FIREBASE_AUTH_URI
+      - key: FIREBASE_TOKEN_URI
+        fromSecret: FIREBASE_TOKEN_URI
+      - key: FIREBASE_AUTH_PROVIDER_X509_CERT_URL
+        fromSecret: FIREBASE_AUTH_PROVIDER_X509_CERT_URL
+      - key: FIREBASE_CLIENT_X509_CERT_URL
+        fromSecret: FIREBASE_CLIENT_X509_CERT_URL
 
-      # This automatically connects to your Render Redis service.
-      - key: REDIS_URL
-        fromService:
-          type: redis
-          name: givta-redis # Ensure this matches the name of your Render Redis service
+      # Optional: Redis (only if you have a Redis service)
+      # - key: REDIS_URL
+      #   fromService:
+      #     type: redis
+      #     property: connectionString
     healthCheckPath: /api/health
     # Auto-deploy is enabled, so any 'git push' to your main branch will trigger a new deployment.
     autoDeploy: true
