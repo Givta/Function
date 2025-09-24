@@ -10,9 +10,14 @@ try {
     let credential;
 
     if (process.env.NODE_ENV === 'production') {
-      // In production, use application default credentials (from GOOGLE_APPLICATION_CREDENTIALS)
-      credential = admin.credential.applicationDefault();
-      console.log('Using Firebase application default credentials for production.');
+      // In production, use service account JSON from environment
+      const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
+      if (!serviceAccountJson) {
+        throw new Error('FIREBASE_SERVICE_ACCOUNT_JSON environment variable is required in production');
+      }
+      const serviceAccount = JSON.parse(serviceAccountJson);
+      credential = admin.credential.cert(serviceAccount);
+      console.log('Using Firebase service account JSON from environment for production.');
     } else {
       // In development, try to load from JSON file first
       try {

@@ -1,7 +1,7 @@
 import { Router, Request } from 'express';
 import { KYCService } from '../services/KYCService';
 import { AuthMiddleware } from '../middleware/auth/AuthMiddleware';
-import multer, { FileFilterCallback } from 'multer';
+import multer from 'multer';
 
 const router = Router();
 
@@ -10,7 +10,7 @@ const upload = multer({
   limits: {
     fileSize: 5 * 1024 * 1024, // 5MB limit
   },
-  fileFilter: (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
+  fileFilter: (req: Request, file: any, cb: (error: Error | null, acceptFile?: boolean) => void) => {
     // Allow images only
     if (file.mimetype.startsWith('image/')) {
       cb(null, true);
@@ -34,27 +34,18 @@ router.post('/submit', AuthMiddleware.authenticate, upload.fields([
     const userId = req.user!.id;
     const files = req.files as { [fieldname: string]: Express.Multer.File[] };
 
+    const documentTypes = ['idCard', 'passport', 'utilityBill', 'selfie'] as const;
+    const documents: { [key: string]: string } = {};
+
     // Upload documents to cloud storage
-    const documents: any = {};
-
-    if (files.idCard?.[0]) {
-      const uploadResult = await KYCService.uploadDocument(userId, 'idCard', files.idCard[0]);
-      if (uploadResult) documents.idCardUrl = uploadResult.url;
-    }
-
-    if (files.passport?.[0]) {
-      const uploadResult = await KYCService.uploadDocument(userId, 'passport', files.passport[0]);
-      if (uploadResult) documents.passportUrl = uploadResult.url;
-    }
-
-    if (files.utilityBill?.[0]) {
-      const uploadResult = await KYCService.uploadDocument(userId, 'utilityBill', files.utilityBill[0]);
-      if (uploadResult) documents.utilityBillUrl = uploadResult.url;
-    }
-
-    if (files.selfie?.[0]) {
-      const uploadResult = await KYCService.uploadDocument(userId, 'selfie', files.selfie[0]);
-      if (uploadResult) documents.selfieUrl = uploadResult.url;
+    for (const docType of documentTypes) {
+      if (files[docType]?.[0]) {
+        const file = files[docType][0];
+        const uploadResult = await KYCService.uploadDocument(userId, docType, file);
+        if (uploadResult) {
+          documents[`${docType}Url`] = uploadResult.url;
+        }
+      }
     }
 
     // Validate documents
