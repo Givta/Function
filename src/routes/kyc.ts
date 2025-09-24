@@ -1,7 +1,7 @@
-import { Router } from 'express';
+import { Router, Request } from 'express';
 import { KYCService } from '../services/KYCService';
 import { AuthMiddleware } from '../middleware/auth/AuthMiddleware';
-import multer from 'multer';
+import multer, { FileFilterCallback } from 'multer';
 
 const router = Router();
 
@@ -10,7 +10,7 @@ const upload = multer({
   limits: {
     fileSize: 5 * 1024 * 1024, // 5MB limit
   },
-  fileFilter: (req, file, cb) => {
+  fileFilter: (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
     // Allow images only
     if (file.mimetype.startsWith('image/')) {
       cb(null, true);
