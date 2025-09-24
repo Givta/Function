@@ -21,7 +21,7 @@ services:
       - key: FIREBASE_PROJECT_ID
         value: givta-94cb8
       - key: ALLOWED_ORIGINS
-        value: https://givta.app,https://givta-admin.netlify.app,exp://exp.host
+        value: https://givta.app,https://givta-admin.netlify.app,exp://exp.host,http://localhost:8081,https://localhost:8081,http://10.0.0.0/8,http://172.16.0.0/12,http://192.168.0.0/16
       - key: ENABLE_WHATSAPP_BOT
         value: "true" # or "false"
       # Ensure devDependencies are installed during build so TypeScript types are available
